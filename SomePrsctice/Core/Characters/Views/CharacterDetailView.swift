@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct CharacterDetailView: View {
-    
+
+    @ObservedObject var characterVM: CharactersViewModel
+    @State private var alert: AppError? = nil
     let character: Character
+    
     
     var characterStatus: String {
         if character.status == "Alive" {
@@ -63,11 +66,41 @@ struct CharacterDetailView: View {
             }
             form(for: character.location?.name ?? "no location found", with: "location")
             form(for: character.created, with: "created")
+            
+            Text("Episodes:")
+                .foregroundStyle(Color.gray)
+                .padding(.top, 5)
+            VStack(alignment: .leading) {
+                ForEach(characterVM.episodes, id: \.self) { episode in
+                    Text(episode.name)
+                        .font(.title3)
+                    Text(episode.episode)
+                        .foregroundStyle(Color.gray)
+                        .font(.caption)
+                    Divider()
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background {
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(lineWidth: 3)
+            }
+            .padding(5)
         }
         .toolbar(.hidden, for: .tabBar)
+        .task {
+            for url in character.episode {
+                do {
+                    try await characterVM.getExtraInfo(with: url)
+                } catch {
+                    self.alert = AppError.badURL
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    CharacterDetailView(character: DeveloperPreview.instanse.charackter)
+    CharacterDetailView(characterVM: CharactersViewModel(apiManger: APIManager()), character: DeveloperPreview.instanse.charackter)
 }
