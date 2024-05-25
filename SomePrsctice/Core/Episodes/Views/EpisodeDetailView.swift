@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EpisodeDetailView: View {
     
+    @State private var alert: AppError? = nil
     @ObservedObject var vm: EpisodesViewModel
     @State private var gridItem: [GridItem] = [GridItem(), GridItem()]
     let episode: Episode
@@ -58,7 +59,7 @@ struct EpisodeDetailView: View {
                     try await vm.getExtraInfo(with: url)
                 }
             } catch {
-                
+                self.alert = AppError.badURL
             }
         }
     }

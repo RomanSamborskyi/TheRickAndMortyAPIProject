@@ -70,8 +70,10 @@ struct CharactersMainView: View {
                         vm.characters.removeAll()
                         do {
                             try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
-                        } catch {
+                        } catch AppError.badURL {
                             self.alert = AppError.badURL
+                        } catch AppError.noInternet {
+                            self.alert = AppError.noInternet
                         }
                     }
                 }

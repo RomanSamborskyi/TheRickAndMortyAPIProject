@@ -30,25 +30,21 @@ class CharactersViewModel: ObservableObject {
             throw AppError.badURL
         }
         
-        do {
-           try await withThrowingTaskGroup(of: CharacterResponse.self) { group in
-                group.addTask {
-                    try await self.manager.download(with: url, type: CharacterResponse.self)!
-                }
-                
-                for try await response in group {
-                    await MainActor.run {
-                        self.characters.append(contentsOf: response.results)
-                        if response.info.next != nil {
-                            self.nextURL = response.info.next
-                        } else if response.info.next == nil {
-                            self.nextURL = nil
-                        }
+        try await withThrowingTaskGroup(of: CharacterResponse.self) { group in
+            group.addTask {
+                try await self.manager.download(with: url, type: CharacterResponse.self)!
+            }
+            
+            for try await response in group {
+                await MainActor.run {
+                    self.characters.append(contentsOf: response.results)
+                    if response.info.next != nil {
+                        self.nextURL = response.info.next
+                    } else if response.info.next == nil {
+                        self.nextURL = nil
                     }
                 }
             }
-        } catch {
-            print(error)
         }
     }
     ///Func to creat url for filter charactres

@@ -27,10 +27,8 @@ final class ImageDownloader: ObservableObject {
         Task {
             if let image = cache.getImageFromCahe(with: imageID ?? "no id") {
                     self.poster = image
-                    print("imge from cahce")
             } else {
                 try await downloadImage()
-                print("new image")
             }
         }
     }
