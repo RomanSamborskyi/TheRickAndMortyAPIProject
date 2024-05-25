@@ -52,14 +52,8 @@ struct CharactersMainView: View {
                     Button {
                         self.showFilterSheet.toggle()
                     } label: {
-                        Text("Flter")
-                            .padding(5)
-                            .foregroundStyle(Color.primary)
-                            .background(filterByStatus != .non || filterByGender != .non ?
-                                        RoundedRectangle(cornerRadius: 10)
-                                .foregroundStyle(Color.green)
-                                        : nil
-                            )
+                        Image(systemName: filterByGender == .non && filterByStatus == .non ? "slider.horizontal.2.square" : "slider.horizontal.2.square.badge.arrow.down")
+                            .symbolEffect(.bounce, value: showFilterSheet)
                     }
                 }
             }
