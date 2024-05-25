@@ -41,7 +41,7 @@ struct CharactersMainView: View {
             .task {
                 if vm.characters.isEmpty {
                     do {
-                        try await vm.getCharacters(with: APICharactersEndpoints.allCahracters(page: 1).endpoints)
+                        try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
                     } catch {
                         self.alert = AppError.badURL
                     }
@@ -69,7 +69,7 @@ struct CharactersMainView: View {
                     } else if searchText.count < 2 && searchText.count == 0 {
                         vm.characters.removeAll()
                         do {
-                            try await vm.getCharacters(with: APICharactersEndpoints.allCahracters(page: 1).endpoints)
+                            try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
                         } catch {
                             self.alert = AppError.badURL
                         }

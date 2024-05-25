@@ -69,6 +69,6 @@ class EpisodesViewModel: ObservableObject {
     }
     ///Return search URL
     func search(episode: String) -> String? {
-        return "https://rickandmortyapi.com/api/episode/?name=\(episode)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
+        return "\(APIEpisodesEndpoints.baseURl.endpoints)?name=\(episode)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
     }
 }

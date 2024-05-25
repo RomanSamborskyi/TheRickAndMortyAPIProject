@@ -54,17 +54,17 @@ class CharactersViewModel: ObservableObject {
     ///Func to creat url for filter charactres
     func filterUrl(status: FilterCharactersStatus?, gender: FilterCharactersGender?) -> String? {
         if let status = status, status != .non, let gender = gender, gender != .non {
-            return "https://rickandmortyapi.com/api/character/?\(status.endpoints)&\(gender.endpoints)"
+            return "\(APICharactersEndpoints.baseURL(endpoint: .non).endpoints)?\(status.endpoints)&\(gender.endpoints)"
         } else if let status = status, gender == .non {
-            return "https://rickandmortyapi.com/api/character/?\(status.endpoints)"
+            return "\(APICharactersEndpoints.baseURL(endpoint: .non).endpoints)?\(status.endpoints)"
         } else if let gender = gender, status == .non {
-            return "https://rickandmortyapi.com/api/character/?\(gender.endpoints)"
+            return "\(APICharactersEndpoints.baseURL(endpoint: .non).endpoints)?\(gender.endpoints)"
         }
         return nil
     }
     ///Search url func
     func search(with name: String) -> String? {
-        return "https://rickandmortyapi.com/api/character/?name=\(name)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
+        return APICharactersEndpoints.baseURL(endpoint: .name(name)).endpoints.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
     }
     ///Func to get locations for character
     func getExtraInfo(with url: String) async throws {

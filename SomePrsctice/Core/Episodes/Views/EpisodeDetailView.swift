@@ -13,22 +13,42 @@ struct EpisodeDetailView: View {
     @State private var gridItem: [GridItem] = [GridItem(), GridItem()]
     let episode: Episode
     
+    @ViewBuilder func makeHStack(for text: String, with title: String) -> some View {
+        HStack(alignment: .center) {
+            Text(title + ":")
+                .foregroundStyle(Color.gray)
+            Text(text)
+                .font(.title3)
+            Spacer()
+        }
+        .padding(.leading, 10)
+        .padding(.bottom, 5)
+        .padding(.top, 5)
+    }
+    
     var body: some View {
         ScrollView {
             Text(episode.name)
-            Text(episode.episode)
-            Text(episode.airDate)
-            Text(episode.created)
-            
+                .padding()
+                .font(.largeTitle)
+                .fontWeight(.bold)
+            VStack {
+                makeHStack(for: episode.episode, with: "Episode")
+                makeHStack(for: episode.airDate, with: "Air date")
+                makeHStack(for: episode.created, with: "Created")
+            }
+            .background {
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(lineWidth: 3)
+            }
+            .padding(5)
             Text("Characters")
                 .padding()
                 .font(.title3)
+                .foregroundStyle(Color.gray)
             LazyVGrid(columns: gridItem) {
                 ForEach(vm.characters, id: \.self) { character in
-                    NavigationLink(value: character) {
-                        CharackterPresentationView(character: character)
-                            .foregroundStyle(Color.primary)
-                    }
+                    CharackterPresentationView(character: character)
                 }
             }
         }

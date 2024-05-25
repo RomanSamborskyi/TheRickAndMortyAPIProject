@@ -39,7 +39,7 @@ struct EpisodesMainView: View {
             .task {
                 if vm.episodes.isEmpty {
                     do {
-                        try await vm.getEpisodes(with: "https://rickandmortyapi.com/api/episode")
+                        try await vm.getEpisodes(with: APIEpisodesEndpoints.baseURl.endpoints)
                     } catch {
                         print(error)
                         self.alert = AppError.badURL
@@ -55,10 +55,10 @@ struct EpisodesMainView: View {
                         } catch {
                             self.alert = AppError.badURL
                         }
-                    } else if searchText.count < 2 || searchText.count == 0 {
+                    } else if searchText.count == 0 {
                         do {
                             vm.episodes.removeAll()
-                            try await vm.getEpisodes(with: "https://rickandmortyapi.com/api/episode")
+                            try await vm.getEpisodes(with: APIEpisodesEndpoints.baseURl.endpoints)
                         } catch {
                             self.alert = AppError.badURL
                         }

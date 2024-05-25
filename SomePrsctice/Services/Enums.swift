@@ -46,14 +46,39 @@ enum FilterCharactersGender: String, CaseIterable {
 }
 
 enum APICharactersEndpoints {
-    case singleCharacter(id: Int), allCahracters(page: Int = 1)
+    case singleCharacter(id: Int)
+    case allCahracters(page: Int = 1)
+    indirect case baseURL(endpoint:APICharactersEndpoints)
+    case name(String)
+    case non
     
     var endpoints: String {
         switch self {
         case .singleCharacter(let id):
-            "https://rickandmortyapi.com/api/character/\(id)"
+            "\(id)"
         case .allCahracters(let page):
-            "https://rickandmortyapi.com/api/character/?page=\(page)"
+            "?page=\(page)"
+        case .baseURL(let endpoint):
+            "https://rickandmortyapi.com/api/character/\(endpoint.endpoints)"
+        case .name(let name):
+            "?name=\(name)"
+        case .non:
+            ""
         }
     }
 }
+
+enum APIEpisodesEndpoints {
+    case baseURl
+    
+    var endpoints: String {
+        switch self {
+        case .baseURl:
+            "https://rickandmortyapi.com/api/episode/"
+        }
+    }
+}
+
+
+
+
