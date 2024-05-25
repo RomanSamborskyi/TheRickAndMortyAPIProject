@@ -10,6 +10,7 @@ import SwiftUI
 struct EpisodesMainView: View {
     
     @StateObject var vm: EpisodesViewModel
+    @State private var searchText: String = ""
     @State private var alert: AppError? = nil
     
     init() {
@@ -29,6 +30,7 @@ struct EpisodesMainView: View {
                     SpiningView1(alert: $alert, vm: vm)
                 }
             }
+            .searchable(text: $searchText)
             .navigationDestination(for: Episode.self) { episode in
                 EpisodeDetailView(vm: vm, episode: episode)
             }
@@ -41,6 +43,25 @@ struct EpisodesMainView: View {
                     } catch {
                         print(error)
                         self.alert = AppError.badURL
+                    }
+                }
+            }
+            .onChange(of: searchText) { _, newValue in
+                Task {
+                    if newValue.count > 2 {
+                        do {
+                            vm.episodes.removeAll()
+                            try await vm.getEpisodes(with: vm.search(episode: newValue) ?? "")
+                        } catch {
+                            self.alert = AppError.badURL
+                        }
+                    } else if searchText.count < 2 || searchText.count == 0 {
+                        do {
+                            vm.episodes.removeAll()
+                            try await vm.getEpisodes(with: "https://rickandmortyapi.com/api/episode")
+                        } catch {
+                            self.alert = AppError.badURL
+                        }
                     }
                 }
             }

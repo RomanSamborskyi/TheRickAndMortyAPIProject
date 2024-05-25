@@ -33,7 +33,7 @@ struct CharactersMainView: View {
                     SpiningView(alert: $alert, vm: vm)
                 }
                 .navigationDestination(for: Character.self) { character in
-                    CharacterDetailView(character: character)
+                    CharacterDetailView(characterVM: vm, character: character)
                 }
             }
             .navigationTitle("Characters")

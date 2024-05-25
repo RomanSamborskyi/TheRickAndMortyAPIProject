@@ -24,7 +24,7 @@ class EpisodesViewModel: ObservableObject {
     
     
     ///Func to get characters fot current episode
-    func getCharacterForEpisode(with url: String) async throws {
+    func getExtraInfo(with url: String) async throws {
         guard let url = URL(string: url) else {
             throw AppError.badURL
         }
@@ -54,14 +54,21 @@ class EpisodesViewModel: ObservableObject {
             group.addTask {
                 try await self.apiManager.download(with: url, type: EpisodesResponse.self)!
             }
+            
             for try await episode in group {
                 await MainActor.run {
                     self.episodes.append(contentsOf: episode.results)
                     if episode.info.next != nil {
                         self.nextURL = episode.info.next
+                    } else if episode.info.next == nil {
+                        self.nextURL = nil
                     }
                 }
             }
         }
+    }
+    ///Return search URL
+    func search(episode: String) -> String? {
+        return "https://rickandmortyapi.com/api/episode/?name=\(episode)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
     }
 }

@@ -9,9 +9,11 @@ import Foundation
 
 
 
+
 class CharactersViewModel: ObservableObject {
     
     @Published var characters: [Character] = []
+    @Published var episodes: [Episode] = []
     @Published var nextURL: String? = nil
     
     let manager: APIManager
@@ -39,6 +41,8 @@ class CharactersViewModel: ObservableObject {
                         self.characters.append(contentsOf: response.results)
                         if response.info.next != nil {
                             self.nextURL = response.info.next
+                        } else if response.info.next == nil {
+                            self.nextURL = nil
                         }
                     }
                 }
@@ -61,5 +65,24 @@ class CharactersViewModel: ObservableObject {
     ///Search url func
     func search(with name: String) -> String? {
         return "https://rickandmortyapi.com/api/character/?name=\(name)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
+    }
+    ///Func to get locations for character
+    func getExtraInfo(with url: String) async throws {
+        
+        guard let url = URL(string: url) else { 
+            throw AppError.badURL
+        }
+        
+        try await withThrowingTaskGroup(of: Episode.self) { group in
+            group.addTask {
+                try await self.manager.download(with: url, type: Episode.self)!
+            }
+            
+            for try await result in group {
+                await MainActor.run {
+                    self.episodes.append(result)
+                }
+            }
+        }
     }
 }

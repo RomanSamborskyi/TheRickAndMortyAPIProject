@@ -32,13 +32,10 @@ struct EpisodeDetailView: View {
                 }
             }
         }
-        .navigationDestination(for: Character.self) { character in
-            CharacterDetailView(character: character)
-        }
         .task {
             do {
                 for url in episode.characters {
-                    try await vm.getCharacterForEpisode(with: url)
+                    try await vm.getExtraInfo(with: url)
                 }
             } catch {
                 
