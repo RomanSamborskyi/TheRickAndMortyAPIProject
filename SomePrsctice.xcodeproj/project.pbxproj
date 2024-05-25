@@ -30,6 +30,7 @@
 		6B7F111C2C010E2A003C8C83 /* FilterPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7F111B2C010E2A003C8C83 /* FilterPageView.swift */; };
 		6B7F111E2C011674003C8C83 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7F111D2C011674003C8C83 /* Enums.swift */; };
 		6B83800C2BFE589000A62633 /* CharacterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B83800B2BFE589000A62633 /* CharacterDetailView.swift */; };
+		6BF623122C020394003E4D1D /* EpisodeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF623112C020394003E4D1D /* EpisodeDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +58,7 @@
 		6B7F111B2C010E2A003C8C83 /* FilterPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterPageView.swift; sourceTree = "<group>"; };
 		6B7F111D2C011674003C8C83 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		6B83800B2BFE589000A62633 /* CharacterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterDetailView.swift; sourceTree = "<group>"; };
+		6BF623112C020394003E4D1D /* EpisodeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				6B329DD92BFD24CA00F93FD4 /* EpisodesMainView.swift */,
+				6BF623112C020394003E4D1D /* EpisodeDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 				6B329DE42BFD25A200F93FD4 /* APIManager.swift in Sources */,
 				6B329DEA2BFD25CA00F93FD4 /* ErrorHandling.swift in Sources */,
 				6B7F111C2C010E2A003C8C83 /* FilterPageView.swift in Sources */,
+				6BF623122C020394003E4D1D /* EpisodeDetailView.swift in Sources */,
 				6B329DE22BFD258800F93FD4 /* ImageDownloader.swift in Sources */,
 				6B329DDE2BFD254A00F93FD4 /* LocationsViewModel.swift in Sources */,
 			);

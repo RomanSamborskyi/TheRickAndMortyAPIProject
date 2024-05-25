@@ -18,7 +18,7 @@ actor APIManager: ObservableObject {
             let decoder = JSONDecoder()
             return try decoder.decode(T.self, from: dataResponse)
         } catch {
-            throw AppError.badURL
+            throw AppError.errorOfDecoding(error)
         }
     }
     
