@@ -70,7 +70,7 @@ struct CharacterDetailView: View {
             Text("Episodes:")
                 .foregroundStyle(Color.gray)
                 .padding(.top, 5)
-            VStack(alignment: .leading) {
+            VStack {
                 ForEach(characterVM.episodes, id: \.self) { episode in
                     Text(episode.name)
                         .font(.title3)
@@ -87,6 +87,10 @@ struct CharacterDetailView: View {
                     .stroke(lineWidth: 3)
             }
             .padding(5)
+            .multilineTextAlignment(.leading)
+        }
+        .onDisappear {
+            characterVM.episodes.removeAll()
         }
         .toolbar(.hidden, for: .tabBar)
         .task {

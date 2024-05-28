@@ -8,12 +8,10 @@
 import Foundation
 
 
-
-
 class CharactersViewModel: ObservableObject {
     
     @Published var characters: [Character] = []
-    @Published var episodes: [Episode] = []
+    @Published var episodes: [Episode] = [] 
     @Published var nextURL: String? = nil
     
     let manager: APIManager

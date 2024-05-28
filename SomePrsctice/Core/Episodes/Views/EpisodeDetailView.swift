@@ -50,8 +50,12 @@ struct EpisodeDetailView: View {
             LazyVGrid(columns: gridItem) {
                 ForEach(vm.characters, id: \.self) { character in
                     CharackterPresentationView(character: character)
+                        .foregroundStyle(Color.primary)
                 }
             }
+        }
+        .onDisappear {
+            vm.characters.removeAll()
         }
         .task {
             do {

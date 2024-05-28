@@ -29,11 +29,11 @@ struct EpisodesMainView: View {
                     }
                     SpiningView1(alert: $alert, vm: vm)
                 }
+                .navigationDestination(for: Episode.self) { episode in
+                    EpisodeDetailView(vm: vm, episode: episode)
+                }
             }
             .searchable(text: $searchText)
-            .navigationDestination(for: Episode.self) { episode in
-                EpisodeDetailView(vm: vm, episode: episode)
-            }
             .navigationTitle("Episodes")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })
             .task {
