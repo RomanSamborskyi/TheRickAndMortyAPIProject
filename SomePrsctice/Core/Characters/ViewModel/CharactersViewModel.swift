@@ -11,7 +11,7 @@ import Foundation
 class CharactersViewModel: ObservableObject {
     
     @Published var characters: [Character] = []
-    @Published var episodes: [Episode] = [] 
+    @Published var episodes: [Character:[Episode]] = [:]
     @Published var nextURL: String? = nil
     
     let manager: APIManager
@@ -28,12 +28,12 @@ class CharactersViewModel: ObservableObject {
             throw AppError.badURL
         }
         
-        try await withThrowingTaskGroup(of: CharacterResponse.self) { group in
-            group.addTask {
+        try await withThrowingTaskGroup(of: CharacterResponse.self) { character in
+            character.addTask {
                 try await self.manager.download(with: url, type: CharacterResponse.self)!
             }
             
-            for try await response in group {
+            for try await response in character {
                 await MainActor.run {
                     self.characters.append(contentsOf: response.results)
                     if response.info.next != nil {
@@ -61,21 +61,19 @@ class CharactersViewModel: ObservableObject {
         return APICharactersEndpoints.baseURL(endpoint: .name(name)).endpoints.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
     }
     ///Func to get locations for character
-    func getExtraInfo(with url: String) async throws {
+    func getEpisodes(for character: Character) async throws {
         
-        guard let url = URL(string: url) else { 
-            throw AppError.badURL
-        }
-        
-        try await withThrowingTaskGroup(of: Episode.self) { group in
-            group.addTask {
-                try await self.manager.download(with: url, type: Episode.self)!
+        var array: [Episode] = []
+        for url in character.episode {
+            guard let url = URL(string: url) else {
+                throw AppError.badURL
+            }
+            if let episode = try await self.manager.download(with: url, type: Episode.self) {
+                array.append(episode)
             }
             
-            for try await result in group {
-                await MainActor.run {
-                    self.episodes.append(result)
-                }
+            DispatchQueue.main.async {
+                self.episodes[character] = array
             }
         }
     }

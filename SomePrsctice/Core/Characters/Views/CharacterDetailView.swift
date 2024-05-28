@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CharacterDetailView: View {
 
-    @ObservedObject var characterVM: CharactersViewModel
+    let episodes: [Episode]
     @State private var alert: AppError? = nil
     let character: Character
     
@@ -71,13 +71,10 @@ struct CharacterDetailView: View {
                 .foregroundStyle(Color.gray)
                 .padding(.top, 5)
             VStack {
-                ForEach(characterVM.episodes, id: \.self) { episode in
-                    Text(episode.name)
-                        .font(.title3)
-                    Text(episode.episode)
-                        .foregroundStyle(Color.gray)
-                        .font(.caption)
-                    Divider()
+                ForEach(episodes) { episode in
+                    NavigationLink(value: episode) {
+                        Text(episode.name)
+                    }
                 }
             }
             .padding()
@@ -89,22 +86,10 @@ struct CharacterDetailView: View {
             .padding(5)
             .multilineTextAlignment(.leading)
         }
-        .onDisappear {
-            characterVM.episodes.removeAll()
-        }
         .toolbar(.hidden, for: .tabBar)
-        .task {
-            for url in character.episode {
-                do {
-                    try await characterVM.getExtraInfo(with: url)
-                } catch {
-                    self.alert = AppError.badURL
-                }
-            }
-        }
     }
 }
 
 #Preview {
-    CharacterDetailView(characterVM: CharactersViewModel(apiManger: APIManager()), character: DeveloperPreview.instanse.charackter)
+    CharacterDetailView(episodes: [DeveloperPreview.instanse.episode], character: DeveloperPreview.instanse.charackter)
 }

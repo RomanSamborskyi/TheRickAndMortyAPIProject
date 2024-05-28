@@ -33,8 +33,19 @@ struct CharactersMainView: View {
                     SpiningView(alert: $alert, vm: vm)
                 }
                 .navigationDestination(for: Character.self) { character in
-                    CharacterDetailView(characterVM: vm, character: character)
+                    CharacterDetailView(episodes: vm.episodes[character] ?? [], character: character)
+                        .task {
+                            do {
+                                try await vm.getEpisodes(for: character)
+                            } catch {
+                                
+                            }
+                        }
                 }
+                .navigationDestination(for: Episode.self) { episode in
+                    EpisodeDetailView(characters: vm.characters, episode: episode)
+                }
+                
             }
             .navigationTitle("Characters")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })

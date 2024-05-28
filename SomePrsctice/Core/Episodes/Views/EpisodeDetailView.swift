@@ -10,7 +10,7 @@ import SwiftUI
 struct EpisodeDetailView: View {
     
     @State private var alert: AppError? = nil
-    @ObservedObject var vm: EpisodesViewModel
+    var characters: [Character]
     @State private var gridItem: [GridItem] = [GridItem(), GridItem()]
     let episode: Episode
     
@@ -48,27 +48,17 @@ struct EpisodeDetailView: View {
                 .font(.title3)
                 .foregroundStyle(Color.gray)
             LazyVGrid(columns: gridItem) {
-                ForEach(vm.characters, id: \.self) { character in
-                    CharackterPresentationView(character: character)
-                        .foregroundStyle(Color.primary)
+                ForEach(characters, id: \.self) { character in
+                    NavigationLink(value: character) {
+                        CharackterPresentationView(character: character)
+                            .foregroundStyle(Color.primary)
+                    }
                 }
-            }
-        }
-        .onDisappear {
-            vm.characters.removeAll()
-        }
-        .task {
-            do {
-                for url in episode.characters {
-                    try await vm.getExtraInfo(with: url)
-                }
-            } catch {
-                self.alert = AppError.badURL
             }
         }
     }
 }
 
 #Preview {
-    EpisodeDetailView(vm: EpisodesViewModel(apiManager: APIManager()), episode: DeveloperPreview.instanse.episode)
+    EpisodeDetailView(characters: [DeveloperPreview.instanse.charackter], episode: DeveloperPreview.instanse.episode)
 }

@@ -12,7 +12,7 @@ import Foundation
 class EpisodesViewModel: ObservableObject {
     
     @Published var episodes: [Episode] = []
-    @Published var characters: [Character] = []
+    @Published var characters: [Episode:[Character]] = [:]
     @Published var nextURL: String? = nil
     
     let apiManager: APIManager
@@ -24,21 +24,18 @@ class EpisodesViewModel: ObservableObject {
     
     
     ///Func to get characters fot current episode
-    func getExtraInfo(with url: String) async throws {
-        guard let url = URL(string: url) else {
-            throw AppError.badURL
-        }
-        
-        try await withThrowingTaskGroup(of: Character.self) { group in
-         
-            group.addTask {
-                try await self.apiManager.download(with: url, type: Character.self)!
+    func getExtraInfo(for episode: Episode) async throws {
+        var array:[Character] = []
+        for url in episode.characters {
+            guard let url = URL(string: url) else {
+                throw AppError.badURL
             }
-            
-            for try await result in group {
-                await MainActor.run {
-                    self.characters.append(result)
-                }
+           
+            if let character = try await apiManager.download(with: url, type: Character.self) {
+                array.append(character)
+            }
+            DispatchQueue.main.async {
+                self.characters[episode] = array
             }
         }
     }

@@ -30,7 +30,20 @@ struct EpisodesMainView: View {
                     SpiningView1(alert: $alert, vm: vm)
                 }
                 .navigationDestination(for: Episode.self) { episode in
-                    EpisodeDetailView(vm: vm, episode: episode)
+                    EpisodeDetailView(characters: vm.characters[episode] ?? [], episode: episode)
+                        .task {
+                            do {
+                                try await vm.getExtraInfo(for: episode)
+                            } catch {
+                                self.alert = AppError.badURL
+                            }
+                        }
+                        .onDisappear {
+                            vm.characters.removeAll()
+                        }
+                }
+                .navigationDestination(for: Character.self) { character in
+                    CharacterDetailView(episodes: vm.episodes, character: character)
                 }
             }
             .searchable(text: $searchText)

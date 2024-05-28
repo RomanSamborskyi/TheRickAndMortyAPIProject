@@ -35,6 +35,7 @@ struct Character: Identifiable, Codable, Hashable {
     let episode: [String]
     let url: String
     let created: String
+    var episodes: [Episode]?
     
     static func == (lhs: Character, rhs: Character) -> Bool {
         lhs.id == rhs.id
