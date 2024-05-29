@@ -38,7 +38,7 @@ struct CharactersMainView: View {
                             do {
                                 try await vm.getEpisodes(for: character)
                             } catch {
-                                
+                                self.alert = AppError.badURL
                             }
                         }
                         .onDisappear {
@@ -46,7 +46,17 @@ struct CharactersMainView: View {
                         }
                 }
                 .navigationDestination(for: Episode.self) { episode in
-                    EpisodeDetailView(characters: vm.characters, episode: episode)
+                    EpisodeDetailView(characters: vm.charactersForEpisode[episode] ?? [], episode: episode)
+                        .task {
+                            do {
+                                try await vm.getCharacter(for: episode)
+                            } catch {
+                                self.alert = AppError.badURL
+                            }
+                        }
+                        .onDisappear {
+                            vm.charactersForEpisode.removeAll()
+                        }
                 }
                 
             }

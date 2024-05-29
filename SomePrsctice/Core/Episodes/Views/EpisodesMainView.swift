@@ -43,7 +43,17 @@ struct EpisodesMainView: View {
                         }
                 }
                 .navigationDestination(for: Character.self) { character in
-                    CharacterDetailView(episodes: vm.episodes, character: character)
+                    CharacterDetailView(episodes: vm.episodesForCharacter[character] ?? [], character: character)
+                        .task {
+                            do {
+                                try await vm.getEpisodes(for: character)
+                            } catch {
+                                self.alert = AppError.badURL
+                            }
+                        }
+                        .onDisappear {
+                            vm.episodesForCharacter.removeAll()
+                        }
                 }
             }
             .searchable(text: $searchText)

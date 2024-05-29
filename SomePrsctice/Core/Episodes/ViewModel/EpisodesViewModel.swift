@@ -12,7 +12,8 @@ import Foundation
 class EpisodesViewModel: ObservableObject {
     
     @Published var episodes: [Episode] = []
-    @Published var characters: [Episode:[Character]] = [:]
+    @Published var characters: [Episode : [Character]] = [:]
+    @Published var episodesForCharacter: [Character : [Episode]] = [:]
     @Published var nextURL: String? = nil
     
     let apiManager: APIManager
@@ -23,6 +24,24 @@ class EpisodesViewModel: ObservableObject {
     }
     
     
+    ///Func to get episodes for specific character
+    func getEpisodes(for character: Character) async throws {
+        var episodes: [Episode] = []
+        
+        for episodeURL in character.episode {
+            guard let url = URL(string: episodeURL) else {
+                throw AppError.badURL
+            }
+            
+            if let episode = try await apiManager.download(with: url, type: Episode.self) {
+                episodes.append(episode)
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.episodesForCharacter[character] = episodes
+        }
+    }
     ///Func to get characters fot current episode
     func getExtraInfo(for episode: Episode) async throws {
         var array:[Character] = []
@@ -30,13 +49,13 @@ class EpisodesViewModel: ObservableObject {
             guard let url = URL(string: url) else {
                 throw AppError.badURL
             }
-           
+            
             if let character = try await apiManager.download(with: url, type: Character.self) {
                 array.append(character)
             }
-            DispatchQueue.main.async {
-                self.characters[episode] = array
-            }
+        }
+        DispatchQueue.main.async {
+            self.characters[episode] = array
         }
     }
     ///Func to get episodes list

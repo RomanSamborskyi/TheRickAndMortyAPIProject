@@ -11,7 +11,8 @@ import Foundation
 class CharactersViewModel: ObservableObject {
     
     @Published var characters: [Character] = []
-    @Published var episodes: [Character:[Episode]] = [:]
+    @Published var episodes: [Character : [Episode]] = [:]
+    @Published var charactersForEpisode: [Episode : [Character]] = [:]
     @Published var nextURL: String? = nil
     
     let manager: APIManager
@@ -64,6 +65,7 @@ class CharactersViewModel: ObservableObject {
     func getEpisodes(for character: Character) async throws {
         
         var array: [Episode] = []
+        
         for url in character.episode {
             guard let url = URL(string: url) else {
                 throw AppError.badURL
@@ -71,10 +73,30 @@ class CharactersViewModel: ObservableObject {
             if let episode = try await self.manager.download(with: url, type: Episode.self) {
                 array.append(episode)
             }
-            
+        }
             DispatchQueue.main.async {
                 self.episodes[character] = array
             }
+        
+    }
+    ///Func to get characters for specific episode
+    func getCharacter(for episode: Episode) async throws {
+        
+        var characters: [Character] = []
+        
+        for characterURL in episode.characters {
+            
+            guard let url = URL(string: characterURL) else {
+                throw AppError.badURL
+            }
+            
+            if let character = try await manager.download(with: url, type: Character.self) {
+                characters.append(character)
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.charactersForEpisode[episode] = characters
         }
     }
 }
