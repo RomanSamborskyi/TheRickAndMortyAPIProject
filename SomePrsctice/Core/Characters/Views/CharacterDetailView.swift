@@ -51,6 +51,7 @@ struct CharacterDetailView: View {
     var body: some View {
         ScrollView {
             CharacterImageView(imageURL: character.image, imageID: String(character.id))
+            
             Text(character.name)
                 .padding()
                 .font(.title)

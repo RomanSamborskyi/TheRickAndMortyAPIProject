@@ -36,7 +36,7 @@ struct EpisodeDetailView: View {
             VStack {
                 makeHStack(for: episode.episode, with: "Episode")
                 makeHStack(for: episode.airDate, with: "Air date")
-                makeHStack(for: episode.created, with: "Created")
+                makeHStack(for: episode.created.dateFormater, with: "Created")
             }
             .background {
                 RoundedRectangle(cornerRadius: 15)
