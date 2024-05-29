@@ -39,7 +39,7 @@ struct CharackterPresentationView: View {
         .background(
          RoundedRectangle(cornerRadius: 25)
             .stroke(lineWidth: 3)
-            .foregroundStyle(Color.black)
+            .foregroundStyle(Color.primary)
         )
     }
 }
