@@ -47,13 +47,17 @@ struct EpisodeDetailView: View {
                 .padding()
                 .font(.title3)
                 .foregroundStyle(Color.gray)
-            LazyVGrid(columns: gridItem) {
-                ForEach(characters, id: \.self) { character in
-                    NavigationLink(value: character) {
-                        CharackterPresentationView(character: character)
-                            .foregroundStyle(Color.primary)
+            if !characters.isEmpty {
+                LazyVGrid(columns: gridItem) {
+                    ForEach(characters, id: \.self) { character in
+                        NavigationLink(value: character) {
+                            CharackterPresentationView(character: character)
+                                .foregroundStyle(Color.primary)
+                        }
                     }
                 }
+            } else {
+                ProgressView()
             }
         }
     }
