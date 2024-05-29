@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct CharacterDetailView: View {
-    
+
+    let episodes: [Episode]
+    @State private var alert: AppError? = nil
     let character: Character
+    
     
     var characterStatus: String {
         if character.status == "Alive" {
@@ -63,11 +66,30 @@ struct CharacterDetailView: View {
             }
             form(for: character.location?.name ?? "no location found", with: "location")
             form(for: character.created, with: "created")
+            
+            Text("Episodes:")
+                .foregroundStyle(Color.gray)
+                .padding(.top, 5)
+            VStack {
+                ForEach(episodes) { episode in
+                    NavigationLink(value: episode) {
+                        Text(episode.name)
+                    }
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background {
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(lineWidth: 3)
+            }
+            .padding(5)
+            .multilineTextAlignment(.leading)
         }
         .toolbar(.hidden, for: .tabBar)
     }
 }
 
 #Preview {
-    CharacterDetailView(character: DeveloperPreview.instanse.charackter)
+    CharacterDetailView(episodes: [DeveloperPreview.instanse.episode], character: DeveloperPreview.instanse.charackter)
 }

@@ -33,15 +33,29 @@ struct CharactersMainView: View {
                     SpiningView(alert: $alert, vm: vm)
                 }
                 .navigationDestination(for: Character.self) { character in
-                    CharacterDetailView(character: character)
+                    CharacterDetailView(episodes: vm.episodes[character] ?? [], character: character)
+                        .task {
+                            do {
+                                try await vm.getEpisodes(for: character)
+                            } catch {
+                                
+                            }
+                        }
+                        .onDisappear {
+                            vm.episodes.removeAll()
+                        }
                 }
+                .navigationDestination(for: Episode.self) { episode in
+                    EpisodeDetailView(characters: vm.characters, episode: episode)
+                }
+                
             }
             .navigationTitle("Characters")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })
             .task {
                 if vm.characters.isEmpty {
                     do {
-                        try await vm.getCharacters(with: APICharactersEndpoints.allCahracters(page: 1).endpoints)
+                        try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
                     } catch {
                         self.alert = AppError.badURL
                     }
@@ -69,9 +83,11 @@ struct CharactersMainView: View {
                     } else if searchText.count < 2 && searchText.count == 0 {
                         vm.characters.removeAll()
                         do {
-                            try await vm.getCharacters(with: APICharactersEndpoints.allCahracters(page: 1).endpoints)
-                        } catch {
+                            try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
+                        } catch AppError.badURL {
                             self.alert = AppError.badURL
+                        } catch AppError.noInternet {
+                            self.alert = AppError.noInternet
                         }
                     }
                 }
