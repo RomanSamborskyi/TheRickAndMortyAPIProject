@@ -41,6 +41,9 @@ struct CharactersMainView: View {
                                 
                             }
                         }
+                        .onDisappear {
+                            vm.episodes.removeAll()
+                        }
                 }
                 .navigationDestination(for: Episode.self) { episode in
                     EpisodeDetailView(characters: vm.characters, episode: episode)
