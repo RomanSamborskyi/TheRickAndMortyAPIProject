@@ -35,7 +35,6 @@ struct CharacterImageView: View {
                         .resizable()
                         .scaledToFit()
                         .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .padding()
                 }
             }
         }

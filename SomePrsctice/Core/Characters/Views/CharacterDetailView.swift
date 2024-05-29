@@ -51,6 +51,7 @@ struct CharacterDetailView: View {
     var body: some View {
         ScrollView {
             CharacterImageView(imageURL: character.image, imageID: String(character.id))
+            
             Text(character.name)
                 .padding()
                 .font(.title)
@@ -65,26 +66,36 @@ struct CharacterDetailView: View {
                     .minimumScaleFactor(0.6)
             }
             form(for: character.location?.name ?? "no location found", with: "location")
-            form(for: character.created, with: "created")
+            form(for: character.created.dateFormater, with: "created")
             
             Text("Episodes:")
                 .foregroundStyle(Color.gray)
                 .padding(.top, 5)
-            VStack {
-                ForEach(episodes) { episode in
-                    NavigationLink(value: episode) {
-                        Text(episode.name)
+            if !episodes.isEmpty {
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(episodes) { episode in
+                            NavigationLink(value: episode) {
+                                VStack(alignment: .leading) {
+                                    Text(episode.name)
+                                    Text(episode.episode)
+                                }
+                            }
+                            .foregroundStyle(Color.primary)
+                            .padding()
+                            .frame(width: 210)
+                            .background {
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(lineWidth: 3)
+                            }
+                            .padding(5)
+                            .multilineTextAlignment(.leading)
+                        }
                     }
                 }
+            } else {
+                ProgressView()
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background {
-                RoundedRectangle(cornerRadius: 15)
-                    .stroke(lineWidth: 3)
-            }
-            .padding(5)
-            .multilineTextAlignment(.leading)
         }
         .toolbar(.hidden, for: .tabBar)
     }
@@ -93,3 +104,4 @@ struct CharacterDetailView: View {
 #Preview {
     CharacterDetailView(episodes: [DeveloperPreview.instanse.episode], character: DeveloperPreview.instanse.charackter)
 }
+

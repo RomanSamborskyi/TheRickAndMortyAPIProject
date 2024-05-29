@@ -19,3 +19,16 @@ extension Binding where Value == Bool {
         }
     }
 }
+
+extension String {
+    var dateFormater: String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let formatedDate = formatter.date(from: self) {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd MMMM yyyy"
+            return dateFormatter.string(from: formatedDate)
+        }
+        return "no date"
+    }
+}
