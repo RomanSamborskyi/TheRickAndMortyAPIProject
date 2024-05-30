@@ -23,7 +23,7 @@ struct EpisodesMainView: View {
                 LazyVStack {
                     ForEach(vm.episodes, id: \.self) { episode in
                         NavigationLink(value: episode) {
-                            EpisodePresentationGenericView(episode: episode)
+                            PresentationView(item: episode)
                                 .foregroundStyle(Color.primary)
                         }
                     }

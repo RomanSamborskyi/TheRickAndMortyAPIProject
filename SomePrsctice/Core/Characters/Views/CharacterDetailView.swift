@@ -76,7 +76,7 @@ struct CharacterDetailView: View {
                     HStack {
                         ForEach(episodes) { episode in
                             NavigationLink(value: episode) {
-                                EpisodePresentationGenericView(episode: episode)
+                                PresentationView(item: episode)
                             }
                             .foregroundStyle(Color.primary)
                         }

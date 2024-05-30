@@ -10,12 +10,14 @@ import SwiftUI
 struct PresentationView<T>: View {
     
     let item: T
+    let gradient: LinearGradient = LinearGradient(colors: [.blue, .black, .black, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
+    
     var body: some View {
         VStack {
             if let episode = item as? Episode {
-               EpisodePresentationGenericView(episode: episode)
+                EpisodePresentationGenericView(episode: episode, gradient: gradient)
             } else if let location = item as? SingleLocation {
-                LocationPresentationGenericView(location: location)
+                LocationPresentationGenericView(location: location, gradient: gradient)
             }
         }
     }
@@ -29,7 +31,8 @@ struct PresentationView<T>: View {
 struct EpisodePresentationGenericView: View {
     
     let episode: Episode
-    let gradient: LinearGradient = LinearGradient(colors: [.blue, .black, .black, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
+    let gradient: LinearGradient
+    
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -66,7 +69,7 @@ struct EpisodePresentationGenericView: View {
 struct LocationPresentationGenericView: View {
     
     let location: SingleLocation
-    let gradient: LinearGradient = LinearGradient(colors: [.blue, .black, .black, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
+    let gradient: LinearGradient
     var body: some View {
         VStack(alignment: .leading) {
             HStack {

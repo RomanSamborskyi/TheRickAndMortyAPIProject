@@ -17,6 +17,7 @@ struct CharackterPresentationView: View {
             return character.status + " " + "🔴"
         }
     }
+    let gradient: LinearGradient = LinearGradient(colors: [.blue, .black, .black, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -39,7 +40,7 @@ struct CharackterPresentationView: View {
         .background(
          RoundedRectangle(cornerRadius: 25)
             .stroke(lineWidth: 3)
-            .foregroundStyle(Color.black)
+            .foregroundStyle(gradient)
         )
     }
 }

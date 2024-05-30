@@ -58,7 +58,6 @@ struct CharactersMainView: View {
                             vm.charactersForEpisode.removeAll()
                         }
                 }
-                
             }
             .navigationTitle("Characters")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })

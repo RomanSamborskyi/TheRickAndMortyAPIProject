@@ -12,6 +12,7 @@ class CharactersViewModel: ObservableObject {
     
     @Published var characters: [Character] = []
     @Published var episodes: [Character : [Episode]] = [:]
+    @Published var locations: [Character : SingleLocation] = [:]
     @Published var charactersForEpisode: [Episode : [Character]] = [:]
     @Published var nextURL: String? = nil
     
@@ -21,7 +22,31 @@ class CharactersViewModel: ObservableObject {
         self.manager = apiManger
     }
     
-    
+    ///Func to get locations for character
+    func getLocations(for character: Character) async throws {
+        let result = try await withThrowingTaskGroup(of: SingleLocation.self) { group in
+            
+            var location: SingleLocation? = nil
+            
+            guard let url = URL(string: character.location?.url ?? "") else {
+                throw AppError.badURL
+            }
+            
+            group.addTask {
+                guard let location = try await self.manager.download(with: url, type: SingleLocation.self) else {
+                    throw URLError(.dataNotAllowed)
+                }
+                return location
+            }
+            for try await result in group {
+                location = result
+            }
+            return location
+        }
+        await MainActor.run {
+            self.locations[character] = result
+        }
+    }
     ///Func to fetch characters with specific url
     func getCharacters(with url: String) async throws {
         
