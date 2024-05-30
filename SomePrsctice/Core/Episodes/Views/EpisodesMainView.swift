@@ -23,7 +23,7 @@ struct EpisodesMainView: View {
                 LazyVStack {
                     ForEach(vm.episodes, id: \.self) { episode in
                         NavigationLink(value: episode) {
-                            EpisodeView(episode: episode)
+                            PresentationView(item: episode)
                                 .foregroundStyle(Color.primary)
                         }
                     }
@@ -64,7 +64,6 @@ struct EpisodesMainView: View {
                     do {
                         try await vm.getEpisodes(with: APIEpisodesEndpoints.baseURl.endpoints)
                     } catch {
-                        print(error)
                         self.alert = AppError.badURL
                     }
                 }
@@ -94,25 +93,6 @@ struct EpisodesMainView: View {
 
 #Preview {
     EpisodesMainView()
-}
-
-struct EpisodeView: View {
-    
-    let episode: Episode
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(episode.name)
-                .font(.title3)
-            Text(episode.episode)
-                .font(.callout)
-                .foregroundStyle(Color.gray)
-            Divider()
-        }
-        .padding(10)
-        .frame(maxWidth: .infinity)
-        .padding(.leading, 20)
-    }
 }
 
 struct SpiningView1: View {

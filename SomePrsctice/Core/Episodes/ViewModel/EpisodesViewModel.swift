@@ -89,7 +89,10 @@ class EpisodesViewModel: ObservableObject {
         try await withThrowingTaskGroup(of: EpisodesResponse.self) { group in
             
             group.addTask {
-                try await self.apiManager.download(with: url, type: EpisodesResponse.self)!
+                guard let episode = try await self.apiManager.download(with: url, type: EpisodesResponse.self) else {
+                    throw URLError(.dataNotAllowed)
+                }
+                return episode
             }
             
             for try await episode in group {

@@ -79,6 +79,15 @@ enum APIEpisodesEndpoints {
     }
 }
 
-
+enum APILocationEndpoints {
+    case baseURl
+    
+    var endpoints: String {
+        switch self {
+        case .baseURl:
+            "https://rickandmortyapi.com/api/location"
+        }
+    }
+}
 
 

@@ -76,20 +76,9 @@ struct CharacterDetailView: View {
                     HStack {
                         ForEach(episodes) { episode in
                             NavigationLink(value: episode) {
-                                VStack(alignment: .leading) {
-                                    Text(episode.name)
-                                    Text(episode.episode)
-                                }
+                                PresentationView(item: episode)
                             }
                             .foregroundStyle(Color.primary)
-                            .padding()
-                            .frame(width: 210)
-                            .background {
-                                RoundedRectangle(cornerRadius: 15)
-                                    .stroke(lineWidth: 3)
-                            }
-                            .padding(5)
-                            .multilineTextAlignment(.leading)
                         }
                     }
                 }
