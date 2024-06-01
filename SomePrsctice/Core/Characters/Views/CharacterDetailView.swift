@@ -86,7 +86,6 @@ struct CharacterDetailView: View {
                 ProgressView()
             }
         }
-        .toolbar(.hidden, for: .tabBar)
     }
 }
 

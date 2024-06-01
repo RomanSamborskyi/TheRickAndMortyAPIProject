@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 struct CharacterResponse: Codable {
     
@@ -20,6 +21,7 @@ struct Info: Codable {
     let next: String?
     let prev: String?
 }
+
 
 struct Character: Identifiable, Codable, Hashable {
     

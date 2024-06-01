@@ -14,7 +14,7 @@ struct CharactersMainView: View {
     @StateObject var vm: CharactersViewModel
     @State private var alert: AppError? = nil
     @State private var showFilterSheet: Bool = false
-    @State private var searchText: String = ""
+    @StateObject private var debouncedResult: DebouncedResult = DebouncedResult()
     let gridItem: [GridItem] = [GridItem(), GridItem()]
     init() {
         _vm = StateObject(wrappedValue: CharactersViewModel(apiManger: APIManager()))
@@ -83,14 +83,19 @@ struct CharactersMainView: View {
             .sheet(isPresented: $showFilterSheet) {
                 FilterPageView(vm: vm, filterByStatus: $filterByStatus, filterByGender: $filterByGender)
             }
-            .searchable(text: $searchText)
-            .onChange(of: searchText) { _, newValue in
+            .searchable(text: $debouncedResult.searchText)
+            .onChange(of: debouncedResult.searchText) { _, newValue in
                 Task {
                     if newValue.count > 2 {
                         vm.characters.removeAll()
-                        try await vm.getCharacters(with: vm.search(with: newValue) ?? "")
-                    } else if searchText.count < 2 && searchText.count == 0 {
+                        do {
+                            try await vm.getCharacters(with: vm.search(with: newValue) ?? "")
+                        } catch {
+                            self.alert = AppError.noSearchResult
+                        }
+                    } else if newValue.count < 2 && newValue.count == 0 {
                         vm.characters.removeAll()
+                        debouncedResult.debounceCancellable?.cancel()
                         do {
                             try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
                         } catch AppError.badURL {

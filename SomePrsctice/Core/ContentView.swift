@@ -8,29 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var tabs: Tabs = .characters
+    
     var body: some View {
-        TabView {
-            CharactersMainView()
-                .tabItem {
-                    Label(
-                        title: { Text("Characters") },
-                        icon: { Image(systemName: "person") }
-                    )
-                }
-            EpisodesMainView()
-                .tabItem {
-                    Label(
-                        title: { Text("Episodes") },
-                        icon: { Image(systemName: "tv") }
-                    )
-                }
-            LocationsMainView()
-                .tabItem {
-                    Label(
-                        title: { Text("Locations") },
-                        icon: { Image(systemName: "globe") }
-                    )
-                }
+        ZStack {
+            switch tabs {
+            case .characters:
+                CharactersMainView()
+            case .episodes:
+                EpisodesMainView()
+            case .locations:
+                LocationsMainView()
+            }
+            CustomTabBarView(activeTab: $tabs)
         }
     }
 }

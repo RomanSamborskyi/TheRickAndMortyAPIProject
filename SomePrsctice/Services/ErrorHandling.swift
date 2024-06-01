@@ -10,7 +10,7 @@ import UIKit
 
 
 enum AppError: Error, LocalizedError {
-    case noInternet, badURL, badResponse(status:Int), errorOfDecoding(Error)
+    case noInternet, badURL, badResponse(status:Int), errorOfDecoding(Error), noSearchResult
     
     var errorDescription: String? {
         switch self {
@@ -22,6 +22,8 @@ enum AppError: Error, LocalizedError {
             "Bad response"
         case .errorOfDecoding(let error):
             "Error of decoding data: \(error)"
+        case .noSearchResult:
+            "No matches"
         }
     }
     
@@ -34,6 +36,8 @@ enum AppError: Error, LocalizedError {
         case .badResponse(let status):
             "Status code: \(status)"
         case .errorOfDecoding:
+            nil
+        case .noSearchResult:
             nil
         }
     }

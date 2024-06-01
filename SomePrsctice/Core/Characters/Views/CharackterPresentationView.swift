@@ -10,6 +10,7 @@ import SwiftUI
 struct CharackterPresentationView: View {
     
     let character: Character
+    let gradient: LinearGradient = LinearGradient(colors: [.blue, .black, .black, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
     var characterStatus: String {
         if character.status == "Alive" {
             return character.status + " " + "🟢"
@@ -39,7 +40,7 @@ struct CharackterPresentationView: View {
         .background(
          RoundedRectangle(cornerRadius: 25)
             .stroke(lineWidth: 3)
-            .foregroundStyle(Color.primary)
+            .foregroundStyle(gradient)
         )
     }
 }

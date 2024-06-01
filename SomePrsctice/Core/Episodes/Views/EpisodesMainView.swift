@@ -10,7 +10,7 @@ import SwiftUI
 struct EpisodesMainView: View {
     
     @StateObject var vm: EpisodesViewModel
-    @State private var searchText: String = ""
+    @StateObject private var debouncedResult: DebouncedResult = DebouncedResult()
     @State private var alert: AppError? = nil
     
     init() {
@@ -56,7 +56,7 @@ struct EpisodesMainView: View {
                         }
                 }
             }
-            .searchable(text: $searchText)
+            .searchable(text: $debouncedResult.searchText)
             .navigationTitle("Episodes")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })
             .task {
@@ -68,18 +68,19 @@ struct EpisodesMainView: View {
                     }
                 }
             }
-            .onChange(of: searchText) { _, newValue in
+            .onChange(of: debouncedResult.searchText) { _, newValue in
                 Task {
                     if newValue.count > 2 {
                         do {
                             vm.episodes.removeAll()
                             try await vm.getEpisodes(with: vm.search(episode: newValue) ?? "")
                         } catch {
-                            self.alert = AppError.badURL
+                            self.alert = AppError.noSearchResult
                         }
-                    } else if searchText.count == 0 {
+                    } else if newValue.count == 0 {
                         do {
                             vm.episodes.removeAll()
+                            debouncedResult.debounceCancellable?.cancel()
                             try await vm.getEpisodes(with: APIEpisodesEndpoints.baseURl.endpoints)
                         } catch {
                             self.alert = AppError.badURL

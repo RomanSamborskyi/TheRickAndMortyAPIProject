@@ -23,6 +23,12 @@ class LocationsViewModel: ObservableObject {
         self.apiManager = apiManager
     }
     
+    
+    ///Search func
+    func search(with text: String) -> String? {
+        return "\(APILocationEndpoints.baseURl.endpoints)?name=\(text)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
+    }
+    
     ///Func to get characters fot current episode
     func getExtraInfo(for episode: Episode) async throws {
 

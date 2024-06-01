@@ -10,6 +10,7 @@ import SwiftUI
 struct LocationsMainView: View {
     
     @StateObject var vm: LocationsViewModel
+    @StateObject private var debouncedResult: DebouncedResult = DebouncedResult()
     @State private var alert: AppError? = nil
     
     init() {
@@ -68,6 +69,7 @@ struct LocationsMainView: View {
                         }
                 }
             }
+            .searchable(text: $debouncedResult.searchText)
             .navigationTitle("Locations")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })
             .task {
@@ -76,6 +78,28 @@ struct LocationsMainView: View {
                         try await vm.getLocations(with: APILocationEndpoints.baseURl.endpoints)
                     } catch {
                         self.alert = AppError.noInternet
+                    }
+                }
+            }
+            .onChange(of: debouncedResult.searchText) { _, newValue in
+                Task {
+                    if newValue.count > 2 {
+                        vm.locations.removeAll()
+                        do {
+                            try await vm.getLocations(with: vm.search(with: newValue) ?? "")
+                        } catch {
+                            self.alert = AppError.noSearchResult
+                        }
+                    } else if newValue.count == 0 {
+                        do {
+                            vm.locations.removeAll()
+                            debouncedResult.debounceCancellable?.cancel()
+                            try await vm.getLocations(with: APILocationEndpoints.baseURl.endpoints)
+                        } catch AppError.badURL {
+                            self.alert = AppError.badURL
+                        } catch AppError.noInternet {
+                            self.alert = AppError.noInternet
+                        }
                     }
                 }
             }
