@@ -43,7 +43,7 @@ struct LocationsMainView: View {
                         }
                 }
                 .navigationDestination(for: Character.self) { character in
-                    CharacterDetailView(episodes: vm.episodes[character] ?? [], character: character)
+                    CharacterDetailView(episodes: vm.episodes[character] ?? [], character: character, location: vm.locationForCharacter[character] ?? DeveloperPreview.instanse.locaton)
                         .task {
                             do {
                                 try await vm.getEpisodes(for: character)

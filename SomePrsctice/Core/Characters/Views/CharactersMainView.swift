@@ -33,7 +33,7 @@ struct CharactersMainView: View {
                     SpiningView(alert: $alert, vm: vm)
                 }
                 .navigationDestination(for: Character.self) { character in
-                    CharacterDetailView(episodes: vm.episodes[character] ?? [], character: character)
+                    CharacterDetailView(episodes: vm.episodes[character] ?? [], character: character, location: vm.locationForCharacter[character] ?? DeveloperPreview.instanse.locaton)
                         .task {
                             do {
                                 try await vm.getEpisodes(for: character)
@@ -56,6 +56,19 @@ struct CharactersMainView: View {
                         }
                         .onDisappear {
                             vm.charactersForEpisode.removeAll()
+                        }
+                }
+                .navigationDestination(for: SingleLocation.self) { location in
+                    LocationDetailView(characters: vm.charactersForLocation[location] ?? [], location: location)
+                        .task {
+                            do {
+                                try await vm.fetchCharacters(for: location)
+                            } catch {
+                                self.alert = AppError.badURL
+                            }
+                        }
+                        .onDisappear {
+                            vm.charactersForLocation.removeAll()
                         }
                 }
             }

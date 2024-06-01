@@ -12,15 +12,44 @@ class CharactersViewModel: ObservableObject {
     
     @Published var characters: [Character] = []
     @Published var episodes: [Character : [Episode]] = [:]
+    @Published var locationForCharacter: [Character : SingleLocation] = [:]
+    @Published var charactersForLocation: [SingleLocation : [Character]] = [:]
     @Published var charactersForEpisode: [Episode : [Character]] = [:]
     @Published var nextURL: String? = nil
     
-    let manager: APIManager
+    let apiManager: APIManager
     
     init(apiManger: APIManager) {
-        self.manager = apiManger
+        self.apiManager = apiManger
     }
     
+    ///Func to fetch characters for location
+    func fetchCharacters(for location: SingleLocation) async throws {
+        
+        let characters = try await withThrowingTaskGroup(of: Character.self) { group in
+            for url in location.residents {
+                guard let url = URL(string: url) else {
+                    throw AppError.badURL
+                }
+                
+                group.addTask {
+                    guard let character = try await self.apiManager.download(with: url, type: Character.self) else {
+                        throw URLError(.dataNotAllowed)
+                    }
+                    return character
+                }
+            }
+            var characters: [Character] = []
+            for try await character in group {
+                characters.append(character)
+            }
+            return characters
+        }
+        
+        await MainActor.run {
+            self.charactersForLocation[location] = characters
+        }
+    }
     
     ///Func to fetch characters with specific url
     func getCharacters(with url: String) async throws {
@@ -31,7 +60,7 @@ class CharactersViewModel: ObservableObject {
         
         try await withThrowingTaskGroup(of: CharacterResponse.self) { character in
             character.addTask {
-                guard let characters = try await self.manager.download(with: url, type: CharacterResponse.self) else {
+                guard let characters = try await self.apiManager.download(with: url, type: CharacterResponse.self) else {
                     throw URLError(.dataNotAllowed)
                 }
                 return characters
@@ -67,7 +96,7 @@ class CharactersViewModel: ObservableObject {
     ///Func to get episodes for character
     func getEpisodes(for character: Character) async throws {
         
-        let result = try await withThrowingTaskGroup(of: Episode.self) { group in
+        let episodes = try await withThrowingTaskGroup(of: Episode.self) { group in
             var array: [Episode] = []
             
             for url in character.episode {
@@ -77,7 +106,7 @@ class CharactersViewModel: ObservableObject {
                 }
                 
                 group.addTask {
-                    guard let episode = try await self.manager.download(with: url, type: Episode.self) else {
+                    guard let episode = try await self.apiManager.download(with: url, type: Episode.self) else {
                         throw URLError(.dataNotAllowed)
                     }
                     return episode
@@ -90,8 +119,31 @@ class CharactersViewModel: ObservableObject {
             return array
         }
         
+        let location = try await withThrowingTaskGroup(of: SingleLocation.self) { group in
+            
+            guard let url = URL(string: character.location?.url ?? "") else {
+                throw AppError.badURL
+            }
+            
+            group.addTask {
+                guard let location = try await self.apiManager.download(with: url, type: SingleLocation.self) else {
+                    throw URLError(.dataNotAllowed)
+                }
+                return location
+            }
+            
+            var location: SingleLocation? = nil
+            
+            for try await loc in group {
+                location = loc
+            }
+            return location
+        }
+        
+        
         await MainActor.run {
-            self.episodes[character] = result
+            self.episodes[character] = episodes
+            self.locationForCharacter[character] = location
         }
     }
     ///Func to get characters for specific episode
@@ -105,7 +157,7 @@ class CharactersViewModel: ObservableObject {
                     throw AppError.badURL
                 }
                 charackter.addTask {
-                    guard let character = try await self.manager.download(with: url, type: Character.self) else { throw URLError(.unknown) }
+                    guard let character = try await self.apiManager.download(with: url, type: Character.self) else { throw URLError(.unknown) }
                     return character
                 }
             }

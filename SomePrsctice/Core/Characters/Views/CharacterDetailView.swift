@@ -10,9 +10,9 @@ import SwiftUI
 struct CharacterDetailView: View {
 
     let episodes: [Episode]
-    @State private var alert: AppError? = nil
     let character: Character
-    
+    let location: SingleLocation
+    @State private var alert: AppError? = nil
     
     var characterStatus: String {
         if character.status == "Alive" {
@@ -65,7 +65,10 @@ struct CharacterDetailView: View {
                 form(for: character.type, with: "type")
                     .minimumScaleFactor(0.6)
             }
-            form(for: character.location?.name ?? "no location found", with: "location")
+            NavigationLink(value: location) {
+                form(for: character.location?.name ?? "", with: "Location")
+            }
+            .foregroundStyle(Color.primary)
             form(for: character.created.dateFormater, with: "created")
             
             Text("Episodes:")
@@ -86,10 +89,11 @@ struct CharacterDetailView: View {
                 ProgressView()
             }
         }
+        .padding(.bottom, 50)
     }
 }
 
 #Preview {
-    CharacterDetailView(episodes: [DeveloperPreview.instanse.episode], character: DeveloperPreview.instanse.charackter)
+    CharacterDetailView(episodes: [DeveloperPreview.instanse.episode], character: DeveloperPreview.instanse.charackter, location: DeveloperPreview.instanse.locaton)
 }
 

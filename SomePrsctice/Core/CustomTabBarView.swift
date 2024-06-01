@@ -21,7 +21,7 @@ struct CustomTabBarView: View {
                 ZStack(alignment: .top) {
                     RoundedRectangle(cornerRadius: 0)
                         .frame(width: proxy.size.width, height: proxy.size.height / 9)
-                        .foregroundStyle(Material.ultraThin)
+                        .foregroundStyle(Material.thin)
                     HStack(spacing: proxy.size.width / 5) {
                         ForEach($allTabs) { $tab in
                             let currentTab = tab.tab
@@ -33,7 +33,7 @@ struct CustomTabBarView: View {
                                 Text(currentTab.description)
                                     .font(.caption2)
                             }
-                            .foregroundStyle(self.activeTab == currentTab ? Color.accentColor : Color.gray.opacity(0.7))
+                            .foregroundStyle(self.activeTab == currentTab ? Color.accentColor : Color.gray)
                             .onTapGesture {
                                 withAnimation(.bouncy, completionCriteria: .logicallyComplete) {
                                     self.activeTab = currentTab
@@ -56,3 +56,7 @@ struct CustomTabBarView: View {
     }
 }
 
+
+#Preview {
+    ContentView()
+}
