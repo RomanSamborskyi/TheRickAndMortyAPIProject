@@ -35,11 +35,7 @@ struct CharactersMainView: View {
                 .navigationDestination(for: Character.self) { character in
                     CharacterDetailView(episodes: vm.episodes[character] ?? [], character: character, location: vm.locationForCharacter[character] ?? DeveloperPreview.instanse.locaton)
                         .task {
-                            do {
-                                try await vm.getEpisodes(for: character)
-                            } catch {
-                                self.alert = AppError.badURL
-                            }
+                            await characterTask(character: character)
                         }
                         .onDisappear {
                             vm.episodes.removeAll()
@@ -48,11 +44,7 @@ struct CharactersMainView: View {
                 .navigationDestination(for: Episode.self) { episode in
                     EpisodeDetailView(characters: vm.charactersForEpisode[episode] ?? [], episode: episode)
                         .task {
-                            do {
-                                try await vm.getCharacter(for: episode)
-                            } catch {
-                                self.alert = AppError.badURL
-                            }
+                            await episodesTask(episode: episode)
                         }
                         .onDisappear {
                             vm.charactersForEpisode.removeAll()
@@ -61,12 +53,7 @@ struct CharactersMainView: View {
                 .navigationDestination(for: SingleLocation.self) { location in
                     LocationDetailView(characters: vm.charactersForLocation[location] ?? [], location: location)
                         .task {
-                            do {
-                                try await vm.fetchCharacters(for: location)
-                            } catch {
-                                print(error)
-                                self.alert = AppError.noInternet
-                            }
+                            await locationTask(location: location)
                         }
                         .onDisappear {
                             vm.charactersForLocation.removeAll()
@@ -76,13 +63,7 @@ struct CharactersMainView: View {
             .navigationTitle("Characters")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })
             .task {
-                if vm.characters.isEmpty {
-                    do {
-                        try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
-                    } catch {
-                        self.alert = AppError.badURL
-                    }
-                }
+                await charactersMainTask()
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -100,24 +81,7 @@ struct CharactersMainView: View {
             .searchable(text: $debouncedResult.searchText, prompt: "Search characters...")
             .onChange(of: debouncedResult.searchText) { _, newValue in
                 Task {
-                    if newValue.count > 2 {
-                        vm.characters.removeAll()
-                        do {
-                            try await vm.getCharacters(with: vm.search(with: newValue) ?? "")
-                        } catch {
-                            self.alert = AppError.noSearchResult
-                        }
-                    } else if newValue.count < 2 && newValue.count == 0 {
-                        vm.characters.removeAll()
-                        debouncedResult.debounceCancellable?.cancel()
-                        do {
-                            try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
-                        } catch AppError.badURL {
-                            self.alert = AppError.badURL
-                        } catch AppError.noInternet {
-                            self.alert = AppError.noInternet
-                        }
-                    }
+                    await searchTask(newValue)
                 }
             }
         }
@@ -141,10 +105,146 @@ struct SpiningView: View {
             if !vm.characters.isEmpty && vm.nextURL != nil {
                 do {
                     try await vm.getCharacters(with: vm.nextURL ?? "")
+                } catch let error as AppError {
+                    switch error {
+                    case .noInternet:
+                        self.alert = AppError.noInternet
+                    case .badURL:
+                        self.alert = AppError.badURL
+                    case .badResponse(let status):
+                        self.alert = AppError.badResponse(status: status)
+                    case .errorOfDecoding(let error):
+                        self.alert = AppError.errorOfDecoding(error)
+                    case .noSearchResult:
+                        self.alert = AppError.noSearchResult
+                    }
                 } catch {
-                    self.alert = AppError.badURL
+                    print(error.localizedDescription)
                 }
             }
         }
     }
 }
+
+
+private extension CharactersMainView {
+    ///Get all characters at first launch or when location array is empty
+    func charactersMainTask() async {
+        if vm.characters.isEmpty {
+            do {
+                try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
+            } catch let error as AppError {
+                switch error {
+                case .noInternet:
+                    self.alert = AppError.noInternet
+                case .badURL:
+                    self.alert = AppError.badURL
+                case .badResponse(let status):
+                    self.alert = AppError.badResponse(status: status)
+                case .errorOfDecoding(let error):
+                    self.alert = AppError.errorOfDecoding(error)
+                default:
+                    print(error)
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    ///SearchLogic, contains do-catch block for search task
+    func searchTask(_ newValue: String) async {
+        if newValue.count > 2 {
+            vm.characters.removeAll()
+            do {
+                try await vm.getCharacters(with: vm.search(with: newValue) ?? "")
+            } catch {
+                self.alert = AppError.noSearchResult
+            }
+        } else if newValue.count < 2 && newValue.count == 0 {
+            vm.characters.removeAll()
+            debouncedResult.debounceCancellable?.cancel()
+            do {
+                try await vm.getCharacters(with: APICharactersEndpoints.baseURL(endpoint: .allCahracters(page: 1)).endpoints)
+            } catch let error as AppError {
+                switch error {
+                case .noInternet:
+                    self.alert = AppError.noInternet
+                case .badURL:
+                    self.alert = AppError.badURL
+                case .badResponse(let status):
+                    self.alert = AppError.badResponse(status: status)
+                case .errorOfDecoding(let error):
+                    self.alert = AppError.errorOfDecoding(error)
+                case .noSearchResult:
+                    self.alert = AppError.noSearchResult
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    ///Episodes tasks, contains do-catch block for episodes task
+    func episodesTask(episode: Episode) async {
+        do {
+            try await vm.getCharacter(for: episode)
+        } catch let error as AppError {
+            switch error {
+            case .noInternet:
+                self.alert = AppError.noInternet
+            case .badURL:
+                self.alert = AppError.badURL
+            case .badResponse(let status):
+                self.alert = AppError.badResponse(status: status)
+            case .errorOfDecoding(let error):
+                self.alert = AppError.errorOfDecoding(error)
+            default:
+                print(error)
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    ///Character task, contains do-catch block for character task
+    func characterTask(character: Character) async {
+        do {
+            try await vm.getEpisodes(for: character)
+        } catch let error as AppError {
+            switch error {
+            case .noInternet:
+                self.alert = AppError.noInternet
+            case .badURL:
+                self.alert = AppError.badURL
+            case .badResponse(let status):
+                self.alert = AppError.badResponse(status: status)
+            case .errorOfDecoding(let error):
+                self.alert = AppError.errorOfDecoding(error)
+            default:
+                print(error)
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    ///Location task, contains do-catch block for location task
+    func locationTask(location: SingleLocation) async {
+        do {
+            try await vm.fetchCharacters(for: location)
+        } catch let error as AppError {
+            switch error {
+            case .noInternet:
+                self.alert = AppError.noInternet
+            case .badURL:
+                self.alert = AppError.badURL
+            case .badResponse(let status):
+                self.alert = AppError.badResponse(status: status)
+            case .errorOfDecoding(let error):
+                self.alert = AppError.errorOfDecoding(error)
+            default:
+                print(error)
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+}
+
