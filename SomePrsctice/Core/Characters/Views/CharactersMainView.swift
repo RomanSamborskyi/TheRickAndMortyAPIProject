@@ -64,7 +64,8 @@ struct CharactersMainView: View {
                             do {
                                 try await vm.fetchCharacters(for: location)
                             } catch {
-                                self.alert = AppError.badURL
+                                print(error)
+                                self.alert = AppError.noInternet
                             }
                         }
                         .onDisappear {
@@ -96,7 +97,7 @@ struct CharactersMainView: View {
             .sheet(isPresented: $showFilterSheet) {
                 FilterPageView(vm: vm, filterByStatus: $filterByStatus, filterByGender: $filterByGender)
             }
-            .searchable(text: $debouncedResult.searchText)
+            .searchable(text: $debouncedResult.searchText, prompt: "Search characters...")
             .onChange(of: debouncedResult.searchText) { _, newValue in
                 Task {
                     if newValue.count > 2 {

@@ -26,7 +26,7 @@ actor APIManager: ObservableObject {
         guard let data = data,
               let response = response as? HTTPURLResponse,
               response.statusCode >= 200 && response.statusCode < 300 else {
-            throw AppError.badResponse(status: response.hashValue)
+            throw AppError.badResponse(status: response!)
         }
         return data
     }

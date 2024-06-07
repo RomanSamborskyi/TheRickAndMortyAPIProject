@@ -56,6 +56,8 @@ struct LocationDetailView: View {
                         }
                     }
                 }
+            } else if location.residents.isEmpty {
+                Text("NO RESIDENTS")
             } else {
                 ProgressView()
             }

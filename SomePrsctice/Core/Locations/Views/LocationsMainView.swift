@@ -35,6 +35,7 @@ struct LocationsMainView: View {
                             do {
                                 try await vm.getCharacters(for: location)
                             } catch {
+                                print("from location view")
                                 self.alert = AppError.badURL
                             }
                         }
@@ -69,7 +70,7 @@ struct LocationsMainView: View {
                         }
                 }
             }
-            .searchable(text: $debouncedResult.searchText)
+            .searchable(text: $debouncedResult.searchText, prompt: "Search locations...")
             .navigationTitle("Locations")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })
             .task {

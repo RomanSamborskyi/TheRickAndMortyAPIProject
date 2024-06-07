@@ -55,8 +55,22 @@ struct EpisodesMainView: View {
                             vm.episodesForCharacter.removeAll()
                         }
                 }
+                .navigationDestination(for: SingleLocation.self) { location in
+                    LocationDetailView(characters: vm.charactersForLocation[location] ?? [], location: location)
+                        .task {
+                            do {
+                                try await vm.fetchCharacters(for: location)
+                            } catch {
+                                print(error)
+                                self.alert = AppError.noInternet
+                            }
+                        }
+                        .onDisappear {
+                            vm.charactersForLocation.removeAll()
+                        }
+                }
             }
-            .searchable(text: $debouncedResult.searchText)
+            .searchable(text: $debouncedResult.searchText, prompt: "Search episodes...")
             .navigationTitle("Episodes")
             .alert(alert?.localizedDescription ?? "", isPresented: Binding(value: $alert), actions: { })
             .task {

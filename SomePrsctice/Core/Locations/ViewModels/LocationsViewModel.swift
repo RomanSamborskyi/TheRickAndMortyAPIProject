@@ -34,7 +34,7 @@ class LocationsViewModel: ObservableObject {
                     throw AppError.badURL
                 }
                 
-                group.addTask {
+                group.addTask { [unowned self] in
                     guard let character = try await self.apiManager.download(with: url, type: Character.self) else {
                         throw URLError(.dataNotAllowed)
                     }
@@ -68,7 +68,7 @@ class LocationsViewModel: ObservableObject {
                     throw AppError.badURL
                 }
                 
-                group.addTask {
+                group.addTask { [unowned self] in
                     guard let character = try await self.apiManager.download(with: url, type: Character.self) else {
                         throw URLError(.dataNotAllowed)
                     }
@@ -86,7 +86,6 @@ class LocationsViewModel: ObservableObject {
         }
     }
     ///Func to get episodes for character
-    ///Func to get episodes for character
     func getEpisodes(for character: Character) async throws {
         
         let episodes = try await withThrowingTaskGroup(of: Episode.self) { group in
@@ -98,7 +97,7 @@ class LocationsViewModel: ObservableObject {
                     throw AppError.badURL
                 }
                 
-                group.addTask {
+                group.addTask { [unowned self] in
                     guard let episode = try await self.apiManager.download(with: url, type: Episode.self) else {
                         throw URLError(.dataNotAllowed)
                     }
@@ -118,7 +117,7 @@ class LocationsViewModel: ObservableObject {
                 throw AppError.badURL
             }
             
-            group.addTask {
+            group.addTask { [unowned self] in
                 guard let location = try await self.apiManager.download(with: url, type: SingleLocation.self) else {
                     throw URLError(.dataNotAllowed)
                 }
@@ -147,7 +146,7 @@ class LocationsViewModel: ObservableObject {
                     throw AppError.badURL
                 }
                 
-                group.addTask {
+                group.addTask { [unowned self] in
                     guard let resident = try await self.apiManager.download(with: url, type: Character.self) else {
                         throw URLError(.dataNotAllowed)
                     }
@@ -175,7 +174,7 @@ class LocationsViewModel: ObservableObject {
         }
        
         try await withThrowingTaskGroup(of: LocationRsponse.self) { group in
-            group.addTask {
+            group.addTask { [unowned self] in
                 guard let location = try await self.apiManager.download(with: url, type: LocationRsponse.self) else {
                     throw URLError(.dataNotAllowed)
                 }

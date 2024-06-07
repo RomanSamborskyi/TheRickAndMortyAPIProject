@@ -34,7 +34,7 @@ class EpisodesViewModel: ObservableObject {
                     throw AppError.badURL
                 }
                 
-                group.addTask {
+                group.addTask { [unowned self] in
                     guard let character = try await self.apiManager.download(with: url, type: Character.self) else {
                         throw URLError(.dataNotAllowed)
                     }
@@ -64,7 +64,7 @@ class EpisodesViewModel: ObservableObject {
                     throw AppError.badURL
                 }
                 
-                group.addTask {
+                group.addTask { [unowned self] in
                     guard let episode = try await self.apiManager.download(with: url, type: Episode.self) else {
                         throw URLError(.dataNotAllowed)
                     }
@@ -84,7 +84,7 @@ class EpisodesViewModel: ObservableObject {
                 throw AppError.badURL
             }
             
-            group.addTask {
+            group.addTask { [unowned self] in
                 guard let location = try await self.apiManager.download(with: url, type: SingleLocation.self) else {
                     throw URLError(.dataNotAllowed)
                 }
@@ -116,7 +116,7 @@ class EpisodesViewModel: ObservableObject {
                     throw AppError.badURL
                 }
                 
-                group.addTask {
+                group.addTask { [unowned self] in
                     guard let character = try await self.apiManager.download(with: url, type: Character.self) else {
                         throw URLError(.dataNotAllowed)
                     }
@@ -142,7 +142,7 @@ class EpisodesViewModel: ObservableObject {
         
         try await withThrowingTaskGroup(of: EpisodesResponse.self) { group in
             
-            group.addTask {
+            group.addTask { [unowned self] in
                 guard let episode = try await self.apiManager.download(with: url, type: EpisodesResponse.self) else {
                     throw URLError(.dataNotAllowed)
                 }

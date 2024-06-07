@@ -6,11 +6,12 @@
 //
 
 import UIKit
+import SwiftUI
 
 
 
 enum AppError: Error, LocalizedError {
-    case noInternet, badURL, badResponse(status:Int), errorOfDecoding(Error), noSearchResult
+    case noInternet, badURL, badResponse(status:URLResponse), errorOfDecoding(Error), noSearchResult
     
     var errorDescription: String? {
         switch self {
