@@ -24,30 +24,22 @@ class CharactersViewModel: ObservableObject {
     }
     
     
-    private func getURLS(from location: SingleLocation) async throws -> [URL] {
-        
-            var urls: [URL] = []
-            
-            for url3 in location.residents {
-                guard let url = URL(string: url3) else { throw AppError.badURL }
-                urls.append(url)
-            }
-        return urls
-    }
+    
+    
     ///Func to fetch characters for location
     func fetchCharacters(for location: SingleLocation) async throws {
         
         let characters = try await withThrowingTaskGroup(of: Character.self) { group in
             
-            let residentsURL = try await getURLS(from: location)
-            
-            for url in residentsURL {
+            for url in location.residents {
+                guard let url = URL(string: url) else { throw AppError.badURL }
                group.addTask {
                     guard let character = try await self.apiManager.download(with: url, type: Character.self) else {
-                        throw URLError(.dataNotAllowed)
+                        throw AppError.badResponse(status: nil)
                     }
                     return character
                 }
+                try await Task.sleep(for: .seconds(0.03))
             }
             
             var characters: [Character] = []

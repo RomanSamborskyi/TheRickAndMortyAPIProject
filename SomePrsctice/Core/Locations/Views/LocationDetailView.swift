@@ -43,7 +43,7 @@ struct LocationDetailView: View {
                     .stroke(lineWidth: 3)
             }
             .padding(5)
-            Text("Characters")
+            Text("Residents:")
                 .padding()
                 .font(.title3)
                 .foregroundStyle(Color.gray)
@@ -58,6 +58,12 @@ struct LocationDetailView: View {
                 }
             } else if location.residents.isEmpty {
                 Text("NO RESIDENTS")
+                    .padding()
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                Image(systemName: "person.2.slash.fill")
+                    .padding()
+                    .font(.largeTitle)
             } else {
                 ProgressView()
             }

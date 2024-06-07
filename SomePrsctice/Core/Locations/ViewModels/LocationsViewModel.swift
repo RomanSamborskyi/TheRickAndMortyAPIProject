@@ -30,9 +30,7 @@ class LocationsViewModel: ObservableObject {
         
         let characters = try await withThrowingTaskGroup(of: Character.self) { group in
             for url in location.residents {
-                guard let url = URL(string: url) else {
-                    throw AppError.badURL
-                }
+                guard let url = URL(string: url) else { throw AppError.badURL }
                 
                 group.addTask { [unowned self] in
                     guard let character = try await self.apiManager.download(with: url, type: Character.self) else {
@@ -40,8 +38,11 @@ class LocationsViewModel: ObservableObject {
                     }
                     return character
                 }
+                try await Task.sleep(for: .seconds(0.03))
             }
+            
             var characters: [Character] = []
+            
             for try await character in group {
                 characters.append(character)
             }

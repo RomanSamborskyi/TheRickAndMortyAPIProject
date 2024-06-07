@@ -11,7 +11,7 @@ import SwiftUI
 
 
 enum AppError: Error, LocalizedError {
-    case noInternet, badURL, badResponse(status:URLResponse), errorOfDecoding(Error), noSearchResult
+    case noInternet, badURL, badResponse(status:URLResponse?), errorOfDecoding(Error), noSearchResult
     
     var errorDescription: String? {
         switch self {
@@ -35,7 +35,7 @@ enum AppError: Error, LocalizedError {
         case .badURL:
             nil
         case .badResponse(let status):
-            "Status code: \(status)"
+            "Status code: \(String(describing: status ?? nil))"
         case .errorOfDecoding:
             nil
         case .noSearchResult:
