@@ -180,19 +180,4 @@ class CharactersViewModel: ObservableObject {
             self.charactersForEpisode[episode] = result
         }
     }
-    ///Error handler
-    func errorHadle(_ error: AppError, _ alert: inout AppError) {
-        switch error {
-        case .noInternet:
-            alert = AppError.noInternet
-        case .badURL:
-            alert = AppError.noInternet
-        case .badResponse(let status):
-            alert = AppError.badResponse(status: status)
-        case .errorOfDecoding(let error):
-            alert = AppError.errorOfDecoding(error)
-        case .noSearchResult:
-            alert = AppError.noSearchResult
-        }
-    }
 }
