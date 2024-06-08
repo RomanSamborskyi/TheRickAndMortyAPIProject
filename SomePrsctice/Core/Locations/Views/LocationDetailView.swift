@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct LocationDetailView: View {
     
+    @Query var locations: [LocationEntity]
+    @Environment(\.modelContext) var modelContext
     @State private var alert: AppError? = nil
-    var characters: [Character]
     @State private var gridItem: [GridItem] = [GridItem(), GridItem()]
+    var characters: [Character]
     let location: SingleLocation
     
     @ViewBuilder func makeHStack(for text: String, with title: String) -> some View {
@@ -29,10 +32,27 @@ struct LocationDetailView: View {
     
     var body: some View {
         ScrollView {
-            Text(location.name)
-                .padding()
-                .font(.largeTitle)
-                .fontWeight(.bold)
+            HStack {
+                Text(location.name)
+                    .padding()
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                Button {
+                    if locations.contains(where: { $0.id == location.id }) {
+                        if let loc = locations.first(where: { $0.id == location.id }) {
+                            modelContext.delete(loc)
+                        }
+                    } else {
+                        let loc = LocationEntity(id: location.id, name: location.name, type: location.type, dimension: location.dimension, url: location.url, created: location.created)
+                        modelContext.insert(loc)
+                    }
+                } label: {
+                    Image(systemName: locations.contains(where: { $0.id == location.id }) ? "bookmark.fill": "bookmark")
+                        .padding()
+                        .font(.title)
+                        .foregroundStyle(locations.contains(where: { $0.id == location.id }) ? Color.red : Color.primary)
+                }
+            }
             VStack {
                 makeHStack(for: location.dimension, with: "Dimension")
                 makeHStack(for: location.type, with: "Type")

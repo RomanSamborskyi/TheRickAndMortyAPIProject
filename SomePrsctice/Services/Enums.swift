@@ -90,6 +90,19 @@ enum APILocationEndpoints {
     }
 }
 
-
+enum SavedItems: String, CaseIterable {
+    case character, episode, location
+    
+    var description: String {
+        switch self {
+        case .character:
+            return "Character"
+        case .episode:
+            return "Episode"
+        case .location:
+            return "Location"
+        }
+    }
+}
 
 

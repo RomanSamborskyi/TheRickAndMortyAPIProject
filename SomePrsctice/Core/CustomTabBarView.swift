@@ -22,7 +22,7 @@ struct CustomTabBarView: View {
                     RoundedRectangle(cornerRadius: 0)
                         .frame(width: proxy.size.width, height: proxy.size.height / 9)
                         .foregroundStyle(Material.thin)
-                    HStack(spacing: proxy.size.width / 5) {
+                    HStack(spacing: proxy.size.width / 8.5) {
                         ForEach($allTabs) { $tab in
                             let currentTab = tab.tab
                             VStack {
