@@ -8,7 +8,7 @@
 import Foundation
 
 
-actor APIManager: ObservableObject {
+final class APIManager: ObservableObject {
     
     func download<T>(with url: URL, type: T.Type) async throws -> T? where T: Codable {
         
