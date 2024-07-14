@@ -39,7 +39,7 @@ class CharactersViewModel: ObservableObject {
                     }
                     return character
                 }
-                try await Task.sleep(for: .seconds(0.03))
+               try await Task.sleep(for: .seconds(0.03))  //It's not correct, but it works
             }
             
             var characters: [Character] = []

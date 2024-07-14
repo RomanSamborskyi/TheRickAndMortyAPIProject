@@ -10,7 +10,7 @@ import Foundation
 
 
 enum Tabs: String, CaseIterable {
-    case characters, episodes, locations, saved
+    case characters, episodes, locations
     
     var description: String {
         switch self {
@@ -20,8 +20,6 @@ enum Tabs: String, CaseIterable {
             return "Episodes"
         case .locations:
             return "Locations"
-        case .saved:
-            return "Saved"
         }
     }
     
@@ -33,8 +31,6 @@ enum Tabs: String, CaseIterable {
             return "tv"
         case .locations:
             return "globe"
-        case .saved:
-            return "bookmark.circle"
         }
     }
 }

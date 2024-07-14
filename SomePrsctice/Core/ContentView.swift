@@ -20,8 +20,6 @@ struct ContentView: View {
                 EpisodesMainView()
             case .locations:
                 LocationsMainView()
-            case .saved:
-                SavedItemsMainView()
             }
             CustomTabBarView(activeTab: $tabs)
         }

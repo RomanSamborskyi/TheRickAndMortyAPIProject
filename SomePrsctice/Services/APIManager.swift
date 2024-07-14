@@ -8,12 +8,16 @@
 import Foundation
 
 
-final class APIManager: ObservableObject {
+final actor APIManager: ObservableObject {
     
     func download<T>(with url: URL, type: T.Type) async throws -> T? where T: Codable {
         
         do {
-            let (data, respone) = try await URLSession.shared.data(from: url)
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.timeoutInterval = 40
+            
+            let (data, respone) = try await URLSession.shared.data(for: request)
             let dataResponse = try sessionHandler(data: data, response: respone)
             let decoder = JSONDecoder()
             return try decoder.decode(T.self, from: dataResponse)
