@@ -1,5 +1,5 @@
 
-#The Rick and Morty API project
+# The Rick and Morty API project
 
 The appliaction for those who working by hourly tarrif.
 With this application you can easy write down and store your working hours.
